@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/travis.json
+language: generic
 sudo: required
+dist: jammy
 
 services:
   - docker
@@ -8,5 +10,10 @@ before_install:
   - docker build -t docker-react-dev -f Dockerfile.dev .
 
 script:
-  - docker run -e CI=true docker-react-dev pnpm test -- --coverage #--watchAll=false
+  - docker run -e CI=true docker-react-dev pnpm test -- --watchAll=false --coverage
   - docker build -t docker-react-prod .
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
