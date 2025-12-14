@@ -28,6 +28,7 @@
     "jest-environment-jsdom": "^29",
     "tailwindcss": "^4",
     "ts-jest": "^29",
+    "ts-node": "^10",
     "typescript": "^5"
   }
 }
