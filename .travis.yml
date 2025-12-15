@@ -15,7 +15,7 @@ script:
 
 deploy:
   provider: elasticbeanstalk
-  region: ap-northreast-1
+  region: ap-northeast-1
   app: docker-next
   env: Docker-Next-env
   access_key_id: $AWS_ACCESS_KEY
