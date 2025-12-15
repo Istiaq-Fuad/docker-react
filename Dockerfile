@@ -3,38 +3,31 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies
 RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-# Copy source code
 COPY . .
-
-# Build the application
+ENV NODE_ENV=production
 RUN pnpm build
 
 # Production stage
 FROM node:20-alpine
 
 WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=80
 
-# Install pnpm
-RUN npm install -g pnpm
+# Create non-root user
+RUN addgroup -g 1001 nodejs \
+ && adduser -S -u 1001 nextjs -G nodejs
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
-
-# Copy built application from builder
-COPY --from=builder /app/.next ./.next
+# Copy standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Expose port
-EXPOSE 3000
+USER nextjs
 
-# Start the application
-CMD ["pnpm", "start"]
+EXPOSE 80
+
+CMD ["node", "server.js"]
